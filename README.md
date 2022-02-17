@@ -1,23 +1,23 @@
 # Umbrella-Sampling
 
-In this workflow, we use the SimStack framework features to perform Umbrella Sampling simulation to calculate binding 
-free energy of small peptides to the graphene surface. 
+Here, we design a workflow using  the SimStack framework features, to implement the complicated Umbrella Sampling simulation routine for the calculation of binding free energy of arbitrary small molecules to predefined (silica/graphene) surfaces. 
 
-Here, we combine five different WaNos: (1) AmberTools, (2) System_Builder_Gromacs, (3) Umbrella Sampling (4) Gromacs and (5) Wham. 
+Here, we combine four different WaNos: (1) Gromacs_System_Builder, (2) Umbrella Sampling (3) Gromacs and (4) Wham.
 
 The features and function of the different WaNos in this workflow are described as follows 
 
-## AmberTools 
-The AmberTools Wano can prepare the GROMACS and AMBER topology file for any peptide. The users are supposed to provide the peptide sequence as input to the Wano.  
-
-System_Builder_Gromacs
-This WaNo builds the Input Files for Gromacs. It takes pdb file of the peptide and the custom force field file (*itp) of the peptide as input. It combines the peptide structure with the predefined graphene surface. The Wano  further solvate the combine system, neutralizes and outputs the gromacs input files.
+## Gromacs System Builder 
+The WaNo prepares the necessary input files for a Gromacs run. It takes the *pdb file of the small molecule as input and combines it with the predefined graphene/Silica surface. To generate the forcefield (FF) parameters for the small molecule, the WaNo uses the AmberTools  software package. The FF parameters for the surface are also preloaded along with their structure. The combined system is further solvated in water and charge  using standard Gromacs commands. In the end all necessary input files for the Gromacs run are generated. Input:  pdb (*pdb) of the small molecule. Output: Gromacs input files (*gro, *top, *ndx). 
 
 ## Umbrella Sampling 
-The Wano generates the snippet of the specific gromacs input file for all the umbrella sampling windows. This snippet can be read by Gromacs Wano and run the umbrella sampling. The users are supposed to provide the description of reaction coordinate as input and the Wano creates all the Windows for the Umbrella Sampling run. 
+The WaNo generates the snippet of the specific gromacs run parameter file for all the US windows. This snippet can be read by the Gromacs WaNo and run the US. The users are supposed to provide the description of the reaction coordinates as input and the WaNo creates all the Windows for the US run. 
+Input : Description of reaction coordinates and umbrella specification. Output: All Umbrella sampling windows (with all the Gromacs input files) and their specific MD run parameter (*mdp) file.
 
 ## Gromacs
-This is simply a Wano to run Gromacs. 
+ This is simply a WaNo to run Gromacs. 
+Input: i)*gro file, ii)*top file, iii)*ndx file, iv)The Gromacs MD run parameters, v) If the gromacs run is an umbrella sampling run then the custom umbrella sampling inputs, vi) Custom forcefield files called in the *top file. Output: i)The binary run parameter file for gromacs (*tpr), ii) The equilibrated system Geometry (*gro). iii) In case of  US run, the additional files for the histogram (pullf/pullx files). 
 
 ## Wham
-This collects the output  from the Umbrella Sampling run and generates the PMF. 
+This WaNo collects the output  from the US run and generates the potential of mean force (PMF). 
+Input: files for Histogram (pullf/pullx files) generated after US.
+Output: Free energy Curve.
